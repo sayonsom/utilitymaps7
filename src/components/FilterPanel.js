@@ -3,6 +3,7 @@
 const FilterPanel = ({ onFilterChange, filters }) => {
   const riskOptions = ['Low', 'Medium', 'High'];
   const impactOptions = ['Low', 'Medium', 'High'];
+  const ownerOptions = ['Neelaksh', 'Sayonsom', 'Hari', 'Prathmesh', 'Riktesh', 'Rahul', 'Not assigned'];
   const statusOptions = [
     'Real-Time(<6hours)',
     'Real-Time(<3days)',
@@ -84,11 +85,35 @@ const FilterPanel = ({ onFilterChange, filters }) => {
           </div>
         </div>
 
+        {/* Owner Filter */}
+        <div>
+          <h3 className="font-bold mb-2 text-sm text-gray-800">Filter by Owner</h3>
+          <div className="space-y-2">
+            {ownerOptions.map(owner => (
+              <label key={owner} className="flex items-center text-xs space-x-2">
+                <input
+                  type="checkbox"
+                  checked={filters.owner.includes(owner)}
+                  onChange={(e) => {
+                    const newOwner = e.target.checked
+                      ? [...filters.owner, owner]
+                      : filters.owner.filter(o => o !== owner);
+                    onFilterChange('owner', newOwner);
+                  }}
+                  className="rounded text-blue-500 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700 text-xs">{owner}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
         <button
           onClick={() => {
             onFilterChange('status', []);
             onFilterChange('risk', []);
             onFilterChange('impact', []);
+            onFilterChange('owner', []);
           }}
           className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
         >

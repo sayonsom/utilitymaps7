@@ -26,10 +26,12 @@ const ZoneMap = () => {
   const [filters, setFilters] = useState({
     status: [],
     risk: [],
-    impact: []
+    impact: [],
+    owner: []
   });
   const [hoveredZoneId, setHoveredZoneId] = useState(null);
   const [popupInfo, setPopupInfo] = useState(null);
+  const [colorMode, setColorMode] = useState('status');
 
   // Layer style for the zones
   const zoneLayer = {
@@ -37,15 +39,34 @@ const ZoneMap = () => {
     type: 'fill',
     paint: {
       'fill-color': [
-        'match',
-        ['get', 'status'],
-        'Real-Time(<6hours)', '#00ff00',
-        'Real-Time(<3days)', '#90EE90',
-        'EstimatedMonthly', '#ffff00',
-        'EstimatedAnnually', '#ffd700',
-        'EstimatedHistorically', '#ffa500',
-        'Not Available', '#ffffff',
-        '#ffffff' // default color
+        'case',
+        // Color based on selected mode
+        ['==', ['literal', colorMode], 'owner'],
+        [
+          'match',
+          ['get', 'owner'],
+          'Neelaksh', '#FF6B6B',
+          'Sayonsom', '#4ECDC4',
+          'Hari', '#45B7D1',
+          'Prathmesh', '#96CEB4',
+          'Riktesh', '#FFEEAD',
+          'Rahul', '#D4A5A5',
+          'Not assigned', '#E0E0E0',
+          '#CCCCCC' // default color
+        ],
+        // Default to status colors
+        [
+          'match',
+          ['get', 'status'],
+          'Real-Time(<6hours)', '#00ff00',
+          'Real-Time(<3days)', '#90EE90',
+          'EstimatedDaily', '#98FB98',
+          'EstimatedMonthly', '#ffff00',
+          'EstimatedAnnually', '#ffd700',
+          'EstimatedHistorically', '#ffa500',
+          'Not Available', '#ffffff',
+          '#ffffff' // default color
+        ]
       ],
       'fill-opacity': 0.7,
       'fill-outline-color': '#000000'
@@ -122,6 +143,7 @@ const ZoneMap = () => {
       const counts = {
         'Real-Time(<6hours)': 0,
         'Real-Time(<3days)': 0,
+        'EstimatedDaily': 0,
         'EstimatedMonthly': 0,
         'EstimatedAnnually': 0,
         'EstimatedHistorically': 0,
@@ -218,7 +240,8 @@ const ZoneMap = () => {
         const zoneStatus = statusData[feature.properties.zoneName];
         
         // If no filters are active, show all features
-        if (!filters.status.length && !filters.risk.length && !filters.impact.length) {
+        if (!filters.status.length && !filters.risk.length && 
+            !filters.impact.length && !filters.owner.length) {
           return true;
         }
 
@@ -229,13 +252,16 @@ const ZoneMap = () => {
           filters.risk.includes(zoneStatus?.Risk);
         const matchesImpact = filters.impact.length === 0 || 
           filters.impact.includes(zoneStatus?.Impact);
+        const matchesOwner = filters.owner.length === 0 || 
+          (zoneStatus?.Owner && filters.owner.includes(zoneStatus.Owner));
 
-        return matchesStatus && matchesRisk && matchesImpact;
+        return matchesStatus && matchesRisk && matchesImpact && matchesOwner;
       }).map(feature => ({
         ...feature,
         properties: {
           ...feature.properties,
-          status: statusData[feature.properties.zoneName]?.Status || 'Not Available'
+          status: statusData[feature.properties.zoneName]?.Status || 'Not Available',
+          owner: statusData[feature.properties.zoneName]?.Owner || 'Not assigned'
         }
       }))
     };
@@ -254,7 +280,10 @@ const ZoneMap = () => {
         onFilterChange={handleFilterChange}
         filters={filters}
       />
-      <Legend statusCounts={statusCounts} />
+      <Legend 
+        statusCounts={statusCounts} 
+        onColorModeChange={setColorMode} 
+      />
       <ReactMapGL
         {...viewport}
         ref={mapRef}
@@ -285,6 +314,7 @@ const ZoneMap = () => {
             <div className="p-3 min-w-[200px]">
               <h3 className="font-bold text-lg mb-2">{popupInfo.properties.zoneName}</h3>
               <p className="mb-1">Status: {popupInfo.properties.status}</p>
+              <p className="mb-1">Owner: {statusData[popupInfo.properties.zoneName]?.Owner || 'Not assigned'}</p>
               <p className="mb-3">Last Update: {statusData[popupInfo.properties.zoneName]?.LastUpdate || 'N/A'}</p>
               <button
                 onClick={() => {
