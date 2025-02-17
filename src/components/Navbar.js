@@ -125,6 +125,12 @@ const Navbar = () => {
           
           <div className="flex space-x-8">
             <Link 
+              href="/status" 
+              className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md"
+            >
+              Status
+            </Link>
+            <Link 
               href="/documentation" 
               className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md"
             >
@@ -135,6 +141,12 @@ const Navbar = () => {
               className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md"
             >
               Methodology
+            </Link>
+            <Link 
+              href="/query-builder" 
+              className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md"
+            >
+              Query Builder
             </Link>
           </div>
         </div>

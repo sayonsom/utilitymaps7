@@ -2,6 +2,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { MapProvider } from '@/context/MapContext';
 import { Lexend_Deca } from 'next/font/google'
+import Navbar from '@/components/Navbar';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,7 +32,10 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${lexendDeca.className}`}
       >
         <MapProvider>
-          {children}
+          <Navbar />
+          <main className="pt-16">
+            {children}
+          </main>
         </MapProvider>
       </body>
     </html>
