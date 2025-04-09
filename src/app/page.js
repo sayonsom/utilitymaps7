@@ -4,9 +4,11 @@ import Navbar from '@/components/Navbar';
 
 export default function Home() {
   return (
-    <main className="min-h-screen pt-16">
+    <div className="flex flex-col h-screen">
       <Navbar />
-      <ZoneMap />
-    </main>
+      <div className="flex-1 relative">
+        <ZoneMap />
+      </div>
+    </div>
   );
 }

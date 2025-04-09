@@ -131,10 +131,10 @@ const Navbar = () => {
               Status
             </Link>
             <Link 
-              href="/documentation" 
+              href="/" 
               className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md"
             >
-              Documentation
+              Full Map
             </Link>
             <Link 
               href="/methodology" 
